@@ -1,0 +1,10 @@
+dessert areas/thanalan:
+AREAS:Central Thanalan,Eastern Thanalan,Northern Thanalan,Southern Thanalan,Western Thanalan,Ul'dah - Steps of Nald,Ul'dah - Steps of Thal,The Goblet,Copperbell Mines|TIMES:|PLAYINANYAREA:False|PLAYATANYTIME:False
+
+La Noscea:
+AREAS:Eastern La Noscea,Lower La Noscea,Middle La Noscea,Outer La Noscea,Upper La Noscea,Western La Noscea,Wolves' Den Pier,Mist,Limsa Lominsa,Limsa Lominsa Lower Decks,Limsa Lominsa Upper Decks|TIMES:|PLAYINANYAREA:False|PLAYATANYTIME:False
+
+The black shroud:
+AREAS:New Gridania,Old Gridania,Central Shroud,East Shroud,South Shroud,North Shroud,The Lavender Beds|TIMES:|PLAYINANYAREA:False|PLAYATANYTIME:False
+
+
