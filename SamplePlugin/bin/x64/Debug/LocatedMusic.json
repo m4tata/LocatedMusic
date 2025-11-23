@@ -1,0 +1,20 @@
+{
+  "Author": "your name here",
+  "Name": "LocatedMusic",
+  "InternalName": "LocatedMusic",
+  "AssemblyVersion": "0.0.0.1",
+  "Description": "Plays custom music from MP3 files based on your current location and time of day in FFXIV. Use /locatedmusic to open the configuration window.",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "music",
+    "audio",
+    "customization"
+  ],
+  "DalamudApiLevel": 13,
+  "LoadRequiredState": 0,
+  "LoadSync": false,
+  "CanUnloadAsync": false,
+  "LoadPriority": 0,
+  "Punchline": "Smart music player based on location and time of day.",
+  "AcceptsFeedback": true
+}
