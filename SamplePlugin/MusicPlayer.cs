@@ -17,7 +17,7 @@ public class MusicPlayer : IDisposable
     private bool _isDisposed = false;
     private LocationTracker? _locationTracker;
     private bool _isStopping = false; // Prevent concurrent stop operations
-    
+
     // Fade state
     private enum FadeState
     {
@@ -41,12 +41,12 @@ public class MusicPlayer : IDisposable
         _locationTracker = locationTracker;
         _isCombatPlayer = isCombatPlayer;
     }
-    
+
     private bool _isCombatPlayer = false;
 
     public bool IsPlaying => _waveOut?.PlaybackState == PlaybackState.Playing;
     public bool IsPaused => _waveOut?.PlaybackState == PlaybackState.Paused;
-    
+
     public TimeSpan? CurrentPosition => _audioFile?.CurrentTime;
 
     public void PlaySong(string filePath, TimeSpan? resumePosition = null)
@@ -85,22 +85,22 @@ public class MusicPlayer : IDisposable
             {
                 Volume = _config.MasterVolume
             };
-            
+
             // Resume from saved position if provided
             if (resumePosition.HasValue && resumePosition.Value < _audioFile.TotalTime)
             {
                 _audioFile.CurrentTime = resumePosition.Value;
                 _log.Information($"Resuming {Path.GetFileName(filePath)} from {resumePosition.Value.ToString(@"mm\:ss")}");
             }
-            
+
             _waveOut = new WaveOutEvent();
             _waveOut.Init(_audioFile);
             _waveOut.PlaybackStopped += OnPlaybackStopped;
-            
+
             // Start with volume 0 for fade in
             _audioFile.Volume = 0.0f;
             _waveOut.Play();
-            
+
             // Start fade in
             StartFadeIn();
 
@@ -141,7 +141,7 @@ public class MusicPlayer : IDisposable
                 {
                     _audioFile.Volume = 0.0f;
                 }
-                
+
                 // Resume playback first, then fade in
                 _waveOut.Play();
                 StartFadeIn();
@@ -157,7 +157,7 @@ public class MusicPlayer : IDisposable
     private void StartFadeIn()
     {
         if (_audioFile == null) return;
-        
+
         _fadeStartVolume = _audioFile.Volume;
         _fadeTargetVolume = _config.MasterVolume;
         _fadeStartTime = DateTime.Now;
@@ -167,7 +167,7 @@ public class MusicPlayer : IDisposable
     private void StartFadeOut()
     {
         if (_audioFile == null) return;
-        
+
         _fadeStartVolume = _audioFile.Volume;
         _fadeTargetVolume = 0.0f;
         _fadeStartTime = DateTime.Now;
@@ -183,28 +183,6 @@ public class MusicPlayer : IDisposable
     {
         return _currentSongPath;
     }
-    public (string? name, TimeSpan remaining, TimeSpan total) GetCurrentTrackInfo()
-    {
-        if (_audioFile == null || string.IsNullOrEmpty(_currentSongPath))
-            return (null, TimeSpan.Zero, TimeSpan.Zero);
-
-        try
-        {
-            var total = _audioFile.TotalTime;
-            var current = _audioFile.CurrentTime;
-
-            var remaining = total - current;
-            if (remaining < TimeSpan.Zero)
-                remaining = TimeSpan.Zero;
-
-            var filename = Path.GetFileName(_currentSongPath);
-            return (filename, remaining, total);
-        }
-        catch
-        {
-            return (null, TimeSpan.Zero, TimeSpan.Zero);
-        }
-    }
 
     public void Stop()
     {
@@ -219,7 +197,7 @@ public class MusicPlayer : IDisposable
         {
             // Reset fade state
             _fadeState = FadeState.None;
-            
+
             // Unsubscribe from event first to prevent callbacks during disposal
             if (_waveOut != null)
             {

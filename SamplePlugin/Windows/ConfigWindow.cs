@@ -144,34 +144,13 @@ public class ConfigWindow : Window, IDisposable
         var timeOfDay = _plugin.LocationTracker.GetCurrentTimeOfDayPublic();
         var territoryId = _plugin.LocationTracker.GetCurrentTerritoryId();
         var inCombat = _plugin.LocationTracker.IsInCombatPublic();
-
         ImGui.Text($"Location: {areaName} (ID: {territoryId})");
         ImGui.Text($"Time of Day: {timeOfDay}");
         ImGui.Text($"In Combat: {(inCombat ? "Yes" : "No")}");
-
         var nonCombatPlaying = _plugin.NonCombatMusicPlayer.IsPlaying || _plugin.NonCombatMusicPlayer.IsPaused;
         var combatPlaying = _plugin.CombatMusicPlayer.IsPlaying || _plugin.CombatMusicPlayer.IsPaused;
-
         ImGui.Text($"Non-Combat Music: {(nonCombatPlaying ? (_plugin.NonCombatMusicPlayer.IsPaused ? "Paused" : "Playing") : "Stopped")}");
         ImGui.Text($"Combat Music: {(combatPlaying ? (_plugin.CombatMusicPlayer.IsPaused ? "Paused" : "Playing") : "Stopped")}");
-
-        // 🔥 --- NOW PLAYING DISPLAY GOES HERE — BEFORE ImGui.SameLine() ---
-        var trackInfo = _plugin.NonCombatMusicPlayer.GetCurrentTrackInfo();
-
-        if (!string.IsNullOrEmpty(trackInfo.name))
-        {
-            var remaining = trackInfo.remaining;
-            if (remaining < TimeSpan.Zero) remaining = TimeSpan.Zero;
-
-            string remainingFormatted = $"{(int)remaining.TotalMinutes:D2}:{remaining.Seconds:D2}";
-            ImGui.Text($"Now Playing: {trackInfo.name}  ({remainingFormatted} left)");
-        }
-        else
-        {
-            ImGui.Text("Now Playing: None");
-        }
-        // 🔥 --- END NOW PLAYING DISPLAY ---
-
         ImGui.SameLine();
         if (ImGui.SmallButton("Force Check"))
         {
@@ -187,6 +166,7 @@ public class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
+
         // Song list and configuration
         ImGui.Text("Song Configuration");
         ImGui.SameLine();
@@ -231,11 +211,11 @@ public class ConfigWindow : Window, IDisposable
         }
 
         var mp3Files = Directory.GetFiles(_musicFolderPath, "*.mp3", SearchOption.AllDirectories);
-        
+
         foreach (var file in mp3Files)
         {
             var fileName = Path.GetFileNameWithoutExtension(file);
-            
+
             // Check if song already exists
             if (!_plugin.Configuration.Songs.Any(s => s.FilePath == file))
             {
@@ -258,9 +238,9 @@ public class ConfigWindow : Window, IDisposable
         {
             var song = _plugin.Configuration.Songs[i];
             var isSelected = _selectedSongIndex == i;
-            
+
             var displayName = string.IsNullOrEmpty(song.Name) ? Path.GetFileName(song.FilePath) : song.Name;
-            
+
             // Delete button first (on the right)
             ImGui.PushID($"delete{i}");
             bool shouldDelete = false;
@@ -269,9 +249,9 @@ public class ConfigWindow : Window, IDisposable
                 shouldDelete = true;
             }
             ImGui.PopID();
-            
+
             ImGui.SameLine();
-            
+
             // Selectable
             if (ImGui.Selectable($"{displayName}##song{i}", isSelected))
             {
@@ -320,7 +300,7 @@ public class ConfigWindow : Window, IDisposable
 
         // Area assignments
         ImGui.Text("Area Assignments");
-        
+
         var playInAnyArea = song.PlayInAnyArea;
         if (ImGui.Checkbox("Play in Any Area", ref playInAnyArea))
         {
@@ -355,7 +335,7 @@ public class ConfigWindow : Window, IDisposable
             {
                 var territoryId = song.TerritoryIds[i];
                 var territoryName = _allTerritories.FirstOrDefault(t => t.Id == territoryId)?.Name ?? $"Territory {territoryId}";
-                
+
                 ImGui.PushID($"territory{i}");
                 if (ImGui.BeginCombo($"Area {i + 1}", territoryName))
                 {
@@ -410,7 +390,7 @@ public class ConfigWindow : Window, IDisposable
 
         // Time of day assignments
         ImGui.Text("Time of Day Assignments");
-        
+
         var playAtAnyTime = song.PlayAtAnyTime;
         if (ImGui.Checkbox("Play at Any Time", ref playAtAnyTime))
         {
@@ -439,7 +419,7 @@ public class ConfigWindow : Window, IDisposable
             {
                 var timeOfDay = song.TimeOfDays[i];
                 var timeString = timeOfDay.ToString();
-                
+
                 ImGui.PushID($"time{i}");
                 if (ImGui.BeginCombo($"Time {i + 1}", timeString))
                 {
@@ -494,13 +474,13 @@ public class ConfigWindow : Window, IDisposable
             var areaNames = song.TerritoryIds
                 .Select(id => _allTerritories.FirstOrDefault(t => t.Id == id)?.Name ?? $"Territory{id}")
                 .ToList();
-            
+
             var exportText = $"AREAS:{string.Join(",", areaNames)}|" +
                             $"TIMES:{string.Join(",", song.TimeOfDays)}|" +
                             $"PLAYINANYAREA:{song.PlayInAnyArea}|" +
                             $"PLAYATANYTIME:{song.PlayAtAnyTime}|" +
                             $"PLAYDURINGBATTLE:{song.PlayDuringBattle}";
-            
+
             // Copy to clipboard (Dalamud doesn't have direct clipboard access, so we'll use Windows API)
             SetClipboardText(exportText);
             Plugin.Log.Information($"Exported settings for song: {song.Name}");
@@ -572,12 +552,12 @@ public class ConfigWindow : Window, IDisposable
             // Add areas
             foreach (var areaName in areas)
             {
-                var territory = _allTerritories.FirstOrDefault(t => 
+                var territory = _allTerritories.FirstOrDefault(t =>
                     t.Name.Equals(areaName, StringComparison.OrdinalIgnoreCase));
-                
+
                 if (territory == null)
                 {
-                    territory = _allTerritories.FirstOrDefault(t => 
+                    territory = _allTerritories.FirstOrDefault(t =>
                         t.Name.Contains(areaName, StringComparison.OrdinalIgnoreCase));
                 }
 
@@ -620,17 +600,17 @@ public class ConfigWindow : Window, IDisposable
                 var areaNames = song.TerritoryIds
                     .Select(id => _allTerritories.FirstOrDefault(t => t.Id == id)?.Name ?? $"Territory{id}")
                     .ToList();
-                
+
                 // Use just the filename instead of full path
                 var fileName = Path.GetFileName(song.FilePath);
-                
+
                 var line = $"SONG:{fileName}|" +
                           $"AREAS:{string.Join(",", areaNames)}|" +
                           $"TIMES:{string.Join(",", song.TimeOfDays)}|" +
                           $"PLAYINANYAREA:{song.PlayInAnyArea}|" +
                           $"PLAYATANYTIME:{song.PlayAtAnyTime}|" +
                           $"PLAYDURINGBATTLE:{song.PlayDuringBattle}";
-                
+
                 exportLines.Add(line);
             }
 
@@ -681,9 +661,9 @@ public class ConfigWindow : Window, IDisposable
                     continue;
 
                 var fileName = parts[0].Substring(5); // Remove "SONG:" - now contains just filename
-                
+
                 // Find matching song by filename (not full path)
-                var song = _plugin.Configuration.Songs.FirstOrDefault(s => 
+                var song = _plugin.Configuration.Songs.FirstOrDefault(s =>
                     Path.GetFileName(s.FilePath).Equals(fileName, StringComparison.OrdinalIgnoreCase));
                 if (song == null)
                 {
@@ -740,12 +720,12 @@ public class ConfigWindow : Window, IDisposable
                 // Add areas
                 foreach (var areaName in areas)
                 {
-                    var territory = _allTerritories.FirstOrDefault(t => 
+                    var territory = _allTerritories.FirstOrDefault(t =>
                         t.Name.Equals(areaName, StringComparison.OrdinalIgnoreCase));
-                    
+
                     if (territory == null)
                     {
-                        territory = _allTerritories.FirstOrDefault(t => 
+                        territory = _allTerritories.FirstOrDefault(t =>
                             t.Name.Contains(areaName, StringComparison.OrdinalIgnoreCase));
                     }
 
