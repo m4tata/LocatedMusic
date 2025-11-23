@@ -1,76 +1,161 @@
-> ⚠️ **Don't click Fork!**
-> 
-> This is a GitHub Template repo. If you want to use this for a plugin, [use this template][new-repo] to make a new repo!
->
-> ![image](https://github.com/goatcorp/SamplePlugin/assets/16760685/d9732094-e1ed-4769-a70b-58ed2b92580c)
+# LocatedMusic
 
-# SamplePlugin
+A Dalamud plugin for FFXIV that plays custom music based on your in-game location and time of day.
 
-[![Use This Template badge](https://img.shields.io/badge/Use%20This%20Template-0?logo=github&labelColor=grey)][new-repo]
+## Features
 
+- **Location-based music**: Play different songs in different areas (West Thanalan, East Shroud, etc.)
+- **Time of day support**: Configure songs to play during Morning, Midday, or Night
+- **MP3 file support**: Use your own MP3 files from a folder
+- **Flexible configuration**: Assign multiple areas and times to each song
+- **Easy-to-use UI**: Configure everything through an in-game window
 
-Simple example plugin for Dalamud.
+## Prerequisites
 
-This is not designed to be the simplest possible example, but it is also not designed to cover everything you might want to do. For more detailed questions, come ask in [the Discord](https://discord.gg/holdshift).
+Before you begin, make sure you have:
 
-## Main Points
+1. **XIVLauncher** installed and configured
+2. **Dalamud** installed (comes with XIVLauncher)
+3. **FFXIV** installed and run at least once with Dalamud enabled
+4. **.NET 9.0 SDK** installed (Visual Studio 2022 or Rider will handle this automatically)
+5. **Visual Studio 2022** (Community edition is free) or **JetBrains Rider**
 
-* Simple functional plugin
-  * Slash command
-  * Main UI
-  * Settings UI
-  * Image loading
-  * Plugin json
-* Simple, slightly-improved plugin configuration handling
-* Project organization
-  * Copies all necessary plugin files to the output directory
-    * Does not copy dependencies that are provided by dalamud
-    * Output directory can be zipped directly and have exactly what is required
-  * Hides data files from visual studio to reduce clutter
-    * Also allows having data files in different paths than VS would usually allow if done in the IDE directly
+## Installation & Setup
 
+### Step 1: Build the Plugin
 
-The intention is less that any of this is used directly in other projects, and more to show how similar things can be done.
+1. Open `SamplePlugin.sln` in Visual Studio 2022 or Rider
+2. In the top toolbar, make sure the configuration is set to **Debug** (or **Release** for a final build)
+3. Click **Build** → **Build Solution** (or press `Ctrl+Shift+B`)
+4. Wait for the build to complete. You should see "Build succeeded" in the Output window
 
-## How To Use
+### Step 2: Locate the Built Plugin
 
-### Getting Started
+After building, the plugin DLL will be located at:
+- **Debug build**: `SamplePlugin\bin\x64\Debug\LocatedMusic.dll`
+- **Release build**: `SamplePlugin\bin\x64\Release\LocatedMusic.dll`
 
-To begin, [clone this template repository][new-repo] to your own GitHub account. This will automatically bring in everything you need to get a jumpstart on development. You do not need to fork this repository unless you intend to contribute modifications to it.
+**Important**: You need the entire `LocatedMusic` folder, not just the DLL! The folder should contain:
+- `LocatedMusic.dll`
+- `LocatedMusic.json`
+- Any dependencies (NAudio.dll, etc.)
 
-Be sure to also check out the [Dalamud Developer Docs][dalamud-docs] for helpful information about building your own plugin. The Developer Docs includes helpful information about all sorts of things, including [how to submit][submit] your newly-created plugin to the official repository. Assuming you use this template repository, the provided project build configuration and license are already chosen to make everything a breeze.
+### Step 3: Add Plugin to Dalamud
 
-[new-repo]: https://github.com/new?template_name=SamplePlugin&template_owner=goatcorp
-[dalamud-docs]: https://dalamud.dev
-[submit]: https://dalamud.dev/plugin-publishing/submission
+1. Launch FFXIV through XIVLauncher
+2. Once in-game, type `/xlsettings` in the chat to open Dalamud settings
+3. Go to the **Experimental** tab
+4. In the **Dev Plugin Locations** section, click **Add**
+5. Navigate to and select the **full path** to the `LocatedMusic` folder (the one containing the DLL)
+   - Example: `D:\Mateos Folder\FFXIV\Plugins\SamplePlugin\SamplePlugin\bin\x64\Debug\LocatedMusic`
+6. Click **Save and Close**
 
-### Prerequisites
+### Step 4: Enable the Plugin
 
-SamplePlugin assumes all the following prerequisites are met:
+1. In-game, type `/xlplugins` to open the Plugin Installer
+2. Go to **Dev Tools** → **Installed Dev Plugins**
+3. Find **LocatedMusic** in the list
+4. Check the box to **Enable** it
+5. The plugin is now active!
 
-* XIVLauncher, FINAL FANTASY XIV, and Dalamud have all been installed and the game has been run with Dalamud at least once.
-* XIVLauncher is installed to its default directories and configurations.
-  * If a custom path is required for Dalamud's dev directory, it must be set with the `DALAMUD_HOME` environment variable.
-* A .NET Core 8 SDK has been installed and configured, or is otherwise available. (In most cases, the IDE will take care of this.)
+## Usage
 
-### Building
+### Opening the Configuration Window
 
-1. Open up `SamplePlugin.sln` in your C# editor of choice (likely [Visual Studio 2022](https://visualstudio.microsoft.com) or [JetBrains Rider](https://www.jetbrains.com/rider/)).
-2. Build the solution. By default, this will build a `Debug` build, but you can switch to `Release` in your IDE.
-3. The resulting plugin can be found at `SamplePlugin/bin/x64/Debug/SamplePlugin.dll` (or `Release` if appropriate.)
+Type `/locatedmusic` in chat to open the configuration window.
 
-### Activating in-game
+### Setting Up Your Music
 
-1. Launch the game and use `/xlsettings` in chat or `xlsettings` in the Dalamud Console to open up the Dalamud settings.
-    * In here, go to `Experimental`, and add the full path to the `SamplePlugin.dll` to the list of Dev Plugin Locations.
-2. Next, use `/xlplugins` (chat) or `xlplugins` (console) to open up the Plugin Installer.
-    * In here, go to `Dev Tools > Installed Dev Plugins`, and the `SamplePlugin` should be visible. Enable it.
-3. You should now be able to use `/pmycommand` (chat) or `pmycommand` (console)!
+1. **Choose a Music Folder**:
+   - In the configuration window, paste the full path to a folder containing your MP3 files
+   - Example: `C:\Users\YourName\Music\FFXIV Music`
+   - Click **Scan Folder** to automatically add all MP3 files from that folder
 
-Note that you only need to add it to the Dev Plugin Locations once (Step 1); it is preserved afterwards. You can disable, enable, or load your plugin on startup through the Plugin Installer.
+2. **Configure Songs**:
+   - Click on a song in the list to select it
+   - In the **Song Editor** section below:
+     - **Song Name**: Give it a friendly name (optional)
+     - **Area Assignments**: 
+       - Uncheck "Play in Any Area" to assign specific areas
+       - Click "+ Add Area" to add an area
+       - Use the dropdown to select an area (e.g., "West Thanalan", "East Shroud")
+       - You can add multiple areas per song
+       - Click "Remove" next to an area to remove it
+     - **Time of Day Assignments**:
+       - Uncheck "Play at Any Time" to assign specific times
+       - Click "+ Add Time of Day" to add a time
+       - Select Morning, Midday, or Night from the dropdown
+       - You can add multiple times per song
 
-### Reconfiguring for your own uses
+3. **Master Controls**:
+   - **Enable LocatedMusic**: Toggle the plugin on/off
+   - **Volume**: Adjust the master volume (0.0 to 1.0)
 
-Replace all references to `SamplePlugin` in all the files and filenames with your desired name, then start building the plugin of your dreams. You'll figure it out 😁
+### How It Works
 
-Dalamud will load the JSON file (by default, `SamplePlugin/SamplePlugin.json`) next to your DLL and use it for metadata, including the description for your plugin in the Plugin Installer. Make sure to update this with information relevant to _your_ plugin!
+- The plugin continuously monitors your location and the in-game time
+- When you enter a new area or the time of day changes, it finds all songs that match:
+  - Your current area (or songs set to "Play in Any Area")
+  - The current time of day (or songs set to "Play at Any Time")
+- It randomly selects one matching song and plays it
+- The song will loop until you change location or time
+
+## Troubleshooting
+
+### Plugin Doesn't Appear in Dev Plugins
+
+- Make sure you added the **folder path**, not just the DLL file
+- Check that the folder contains both `LocatedMusic.dll` and `LocatedMusic.json`
+- Try restarting the game
+
+### No Music Plays
+
+- Check that "Enable LocatedMusic" is checked in the config window
+- Verify your music folder path is correct and contains MP3 files
+- Make sure at least one song has matching area and time assignments
+- Check the volume slider isn't at 0
+- Look at `/xllog` for any error messages
+
+### Songs Don't Change When Moving
+
+- Make sure you've assigned areas to your songs
+- Check that the areas are correctly selected in the dropdown
+- The plugin checks for location changes every frame, so it should update immediately
+
+### Build Errors
+
+- Make sure you have .NET 9.0 SDK installed
+- Try cleaning the solution (Build → Clean Solution) and rebuilding
+- Make sure all NuGet packages are restored (right-click solution → Restore NuGet Packages)
+
+## Technical Details
+
+- **Audio Library**: Uses NAudio for MP3 playback
+- **Location Detection**: Uses Dalamud's ClientState to get current territory
+- **Time Detection**: Calculates Eorzean time based on game's time system
+- **Configuration**: Saved in Dalamud's plugin config directory
+
+## Future Enhancements (Not Yet Implemented)
+
+- Spotify integration (requires Spotify API setup)
+- Fade in/out between songs
+- Playlist shuffling options
+- More granular time controls
+
+## Notes
+
+- This plugin plays music **over** the game's music, it doesn't replace it. You may want to turn down the game's BGM volume in FFXIV settings
+- The plugin only supports MP3 files currently
+- Spotify integration is planned but not yet implemented
+
+## Support
+
+If you encounter issues:
+1. Check `/xllog` for error messages
+2. Make sure all prerequisites are installed
+3. Verify your music files are valid MP3 files
+4. Check that your folder paths are correct (use full absolute paths)
+
+---
+
+**Enjoy your custom music experience in FFXIV!**
